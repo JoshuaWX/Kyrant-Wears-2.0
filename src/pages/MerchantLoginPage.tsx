@@ -1,6 +1,7 @@
 import type { FunctionComponent, FormEvent } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 /**
  * MerchantLoginPage — Login screen for the "Merchant" role.
@@ -16,20 +17,34 @@ import { useNavigate } from "react-router-dom";
 
 const MerchantLoginPage: FunctionComponent = () => {
   const navigate = useNavigate();
+  const { signIn, signInGoogle } = useAuth();
 
   /* ── Form state ── */
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  /** Basic client-side form handler */
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  /** Sign in with email/password */
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) return;
     setIsSubmitting(true);
-    // TODO: wire to backend auth
-    console.log("Merchant login submitted", { email });
-    setIsSubmitting(false);
+    setErrorMsg(null);
+    const error = await signIn(email, password);
+    if (error) {
+      setErrorMsg(error);
+      setIsSubmitting(false);
+    } else {
+      navigate("/dashboard");
+    }
+  };
+
+  /** Sign in with Google */
+  const handleGoogleLogin = async () => {
+    setErrorMsg(null);
+    const error = await signInGoogle();
+    if (error) setErrorMsg(error);
   };
 
   return (
@@ -112,6 +127,13 @@ const MerchantLoginPage: FunctionComponent = () => {
             </h3>
           </div>
 
+          {/* Error message */}
+          {errorMsg && (
+            <div className="w-full max-w-[439.4px] rounded-[5px] bg-sienna/20 border border-solid border-sienna px-4 py-3 text-num-14 text-wheat-100 font-inter">
+              {errorMsg}
+            </div>
+          )}
+
           {/* ── Login form ── */}
           <form
             className="w-full flex flex-col items-end gap-[15.1px]"
@@ -171,6 +193,7 @@ const MerchantLoginPage: FunctionComponent = () => {
                 className="cursor-pointer border-wheat-100 border-solid border-[3px] py-1.5 px-0 bg-transparent flex-1 rounded-[5px] flex items-center justify-center gap-1.5 shrink-0 transition-opacity duration-200 hover:opacity-80"
                 type="button"
                 aria-label="Login with Google"
+                onClick={handleGoogleLogin}
               >
                 <span className="relative text-num-16 leading-[17px] font-semibold font-inter text-wheat-100 text-left flex items-center">
                   Login with Google
