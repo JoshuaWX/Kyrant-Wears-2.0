@@ -1,0 +1,42 @@
+/* Google Fonts - must come before other @import rules */
+@import url('https://fonts.googleapis.com/css2?family=Pacifico:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter+28pt:wght@200;300;400;500;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tanker:wght@400&display=swap');
+
+/* Tailwind CSS v4 imports */
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* Layer ordering */
+@layer theme, base, components, utilities;
+
+/* Reference the Tailwind config */
+@config "../tailwind.config.js";
+
+/* Global base styles */
+body {
+  @apply leading-normal m-0;
+}
+
+/* Reset border-width for all elements */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    border-width: 0;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Ensure images scale within their containers */
+img {
+  max-width: 100%;
+  height: auto;
+}
