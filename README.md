@@ -216,12 +216,37 @@ The app uses **React Router DOM** for client-side navigation. All routes are def
 | Route | Page Component | Description |
 |---|---|---|
 | `/` | `LandingPage` | Home page — Hero section, How it Works, Popular Products, FAQ, Footer |
+| `/products` | — | All products — T-shirts, hoodies, sweatshirts, tote bags, caps, iPhone cases |
+| `/designs` | — | Featured/approved designs from creators |
+| `/about` | — | About Kyrant — our mission, story, team |
+| `/pricing` | — | Pricing information — commission rates, printing costs |
+| `/how-it-works` | — | How the platform works — step-by-step guide for shoppers and designers |
+| `/start-a-brand` | — | Guide for new creators — starting a clothing brand |
+| `/bulk-orders` | — | Bulk/custom order inquiry for large quantities |
+| `/custom-branding` | — | Custom branding services for businesses |
+| `/careers` | — | Careers page — job openings at Kyrant |
+| `/help` | — | Help Center — FAQs and support resources |
+| `/contact` | — | Contact form — reach out to the team |
+| `/terms` | `TermsPage` | Terms of Service — legal agreement for using the platform |
+| `/privacy` | `PrivacyPage` | Privacy Policy — how we collect, use, and protect your data |
+| `/ip-policy` | — | Intellectual Property Policy (planned) |
 | `/onboarding` | `OnboardingPage` | Role selection screen — choose "Designer" or "Merchant" |
 | `/signup/designer` | `DesignerSignupPage` | Designer registration form (name, email, phone, password) |
 | `/login/designer` | `DesignerLoginPage` | Designer login form (email, password) |
 | `/signup/merchant` | `MerchantSignupPage` | Merchant registration form |
 | `/login/merchant` | `MerchantLoginPage` | Merchant login form |
 | `/dashboard` | `DashboardPage` | Main storefront — best-selling products, designs, product categories |
+
+### Legal Pages
+
+Legal pages (`/terms` and `/privacy`) are static markdown-like pages with:
+- Consistent dark theme (`#16302B` background)
+- Cream text (`#ECE4B7`)
+- Purple accents (`#694873`)
+- Shared header (logo + nav pill + login/signup)
+- Shared footer (orange `#91422A` with columns and social icons)
+
+All navigation links in Header and Footer use the `<Link>` component from `react-router-dom` for client-side routing.
 
 ### Navigation Flow
 

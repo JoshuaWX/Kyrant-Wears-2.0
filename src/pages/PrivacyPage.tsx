@@ -191,10 +191,7 @@ ${SECTIONS.map((section, index) => {
         </article>
       </main>
 
-      <Footer
-        onTermsClick={() => navigate("/terms")}
-        onPrivacyClick={() => navigate("/privacy")}
-      />
+      <Footer />
     </div>
   );
 };

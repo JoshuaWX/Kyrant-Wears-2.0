@@ -1,4 +1,5 @@
 import type { FunctionComponent } from "react";
+import { Link } from "react-router-dom";
 import LogoBadge from "../components/LogoBadge";
 import NavButton from "../components/NavButton";
 
@@ -29,9 +30,11 @@ const Header: FunctionComponent<HeaderProps> = ({
       <div className="flex-1 flex flex-col md:flex-row items-center md:items-start justify-between gap-4 md:gap-5 max-w-full">
         {/* Brand wordmark */}
         <div className="w-auto md:w-52 flex flex-col items-start py-0 pl-0 pr-0 md:pr-5 box-border">
-          <h1 className="m-0 relative text-[length:inherit] font-normal font-[inherit]">
-            Kyrant
-          </h1>
+          <Link to="/" className="no-underline text-inherit">
+            <h1 className="m-0 relative text-[length:inherit] font-normal font-[inherit]">
+              Kyrant
+            </h1>
+          </Link>
         </div>
 
         {/* Navigation pill bar */}
@@ -43,37 +46,34 @@ const Header: FunctionComponent<HeaderProps> = ({
           <div className="flex items-center sm:items-start gap-2 sm:gap-[15px] shrink-0">
             <LogoBadge onClick={onLogoClick} />
             <div className="flex-1 flex flex-col items-start pt-[11px] px-0 pb-0">
-              <a
-                className="m-0 self-stretch relative text-num-14 sm:text-num-18 font-bold font-bricolage-grotesque inline-block min-w-0 sm:min-w-[100px] cursor-pointer z-[1] no-underline text-darkslateblue"
+              <Link
+                to="/products"
+                className="m-0 self-stretch relative text-num-14 sm:text-num-18 font-bold font-bricolage-grotesque inline-block min-w-0 sm:min-w-[100px] cursor-pointer z-[1] no-underline text-darkslateblue underline"
                 onClick={onProductsClick}
-                role="button"
-                tabIndex={0}
               >
                 PRODUCTS
-              </a>
+              </Link>
             </div>
           </div>
 
           <div className="flex flex-col items-start pt-[11px] px-0 pb-0 shrink-0">
-            <a
+            <Link
+              to="/designs"
               className="m-0 relative text-num-14 sm:text-num-18 font-bold font-bricolage-grotesque cursor-pointer z-[1] no-underline text-darkslateblue"
               onClick={onDesignsClick}
-              role="button"
-              tabIndex={0}
             >
               DESIGNS
-            </a>
+            </Link>
           </div>
 
           <div className="flex flex-col items-start pt-[11px] px-0 pb-0 shrink-0">
-            <a
+            <Link
+              to="/about"
               className="m-0 relative text-num-14 sm:text-num-18 font-bold font-bricolage-grotesque cursor-pointer z-[1] no-underline text-darkslateblue"
               onClick={onBrandsClick}
-              role="button"
-              tabIndex={0}
             >
-              BRANDS
-            </a>
+              ABOUT
+            </Link>
           </div>
         </nav>
 
