@@ -86,6 +86,9 @@ module.exports = {
       "num-32": "32px",
       "num-40": "40px",
     },
+    textShadow: {
+      "custom": "-4px 4px 0 rgba(105, 72, 115, 0.75)",
+    },
     letterSpacing: {
       "num-0_02": "0.02em",
       "num-0_07": "0.07em",

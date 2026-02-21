@@ -52,12 +52,12 @@ const LandingPage: FunctionComponent = () => {
   }, []);
 
   const onPrivacyClick = useCallback(() => {
-    console.log("Navigate to Privacy Policy page");
-  }, []);
+    navigate("/privacy");
+  }, [navigate]);
 
   const onTermsClick = useCallback(() => {
-    console.log("Navigate to Terms of Service page");
-  }, []);
+    navigate("/terms");
+  }, [navigate]);
 
   return (
     <div className="w-full relative bg-darkslategray-100 flex flex-col items-end pt-6 sm:pt-[46px] px-0 pb-0 box-border isolate gap-12 sm:gap-16 md:gap-[109px] leading-[normal] tracking-[normal] overflow-x-hidden">

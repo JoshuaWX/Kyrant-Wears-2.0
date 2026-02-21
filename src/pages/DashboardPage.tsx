@@ -375,7 +375,7 @@ const DashboardPage: FunctionComponent = () => {
       {/* ═══════════════════════════════════════════════════════════
           SECTION 6 — Footer (reused from landing page)
           ═══════════════════════════════════════════════════════════ */}
-      <Footer />
+      <Footer onTermsClick={() => navigate('/terms')} onPrivacyClick={() => navigate('/privacy')} />
     </div>
   );
 };

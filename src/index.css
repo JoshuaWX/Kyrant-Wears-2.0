@@ -40,3 +40,22 @@ img {
   max-width: 100%;
   height: auto;
 }
+
+/* Entrance animation helpers used by PageAnimator */
+.enter-from-top,
+.enter-from-left,
+.enter-from-right,
+.enter-from-bottom {
+  opacity: 0;
+}
+
+.enter-from-top { transform: translateY(-24px); }
+.enter-from-bottom { transform: translateY(24px); }
+.enter-from-left { transform: translateX(-28px); }
+.enter-from-right { transform: translateX(28px); }
+
+.enter-in {
+  opacity: 1 !important;
+  transform: translateX(0) translateY(0) !important;
+  transition: transform 600ms cubic-bezier(.22,.9,.35,1), opacity 420ms ease;
+}
