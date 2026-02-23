@@ -39,8 +39,9 @@ const ALLOWED_SIGNUP_ROLES: UserRole[] = ["designer", "merchant"];
 /**
  * Validate that a role string is a permitted signup role.
  * Prevents privilege escalation at the frontend layer.
+ * Exported so AuthContext can re-validate localStorage values.
  */
-function validateSignupRole(role: string): UserRole {
+export function validateSignupRole(role: string): UserRole {
   if (ALLOWED_SIGNUP_ROLES.includes(role as UserRole)) {
     return role as UserRole;
   }
@@ -115,13 +116,18 @@ export async function signInWithEmail(
 /**
  * Sign in / sign up with Google OAuth.
  *
- * For signup: the role is stored in metadata.
- * For login: metadata is ignored (user already exists).
+ * For signup: the role is persisted in localStorage so it survives
+ * the full-page redirect through Google → Supabase → your app.
+ * After the redirect, AuthContext picks it up and assigns it.
  *
- * IMPORTANT: Google OAuth must be configured in:
+ * For login: localStorage role is ignored if the user already has a profile.
+ *
+ * IMPORTANT — you must configure Google OAuth in:
  *   Supabase Dashboard → Authentication → Providers → Google
- *
- * The redirectTo URL must match your app's domain.
+ *   AND add your redirect URL to the allowed list:
+ *   Supabase Dashboard → Authentication → URL Configuration → Redirect URLs
+ *   Add: http://localhost:5173/dashboard  (dev)
+ *        https://yourdomain.com/dashboard (prod)
  *
  * @param role - Role to assign if this is a new user signup
  */
@@ -130,28 +136,27 @@ export async function signInWithGoogle(role?: string): Promise<{
 }> {
   const validatedRole = role ? validateSignupRole(role) : "merchant";
 
+  // Persist the intended role BEFORE the redirect — localStorage survives
+  // the full Google → Supabase → app redirect cycle (sessionStorage may not).
+  if (role) {
+    localStorage.setItem("kyrant_oauth_role", validatedRole);
+  }
+
   const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
       redirectTo: `${window.location.origin}/dashboard`,
       queryParams: {
-        // These get stored in raw_user_meta_data for new users
         access_type: "offline",
         prompt: "consent",
       },
-      // Pass role in scopes metadata
-      // The handle_new_user trigger reads this from raw_user_meta_data
       skipBrowserRedirect: false,
     },
   });
 
-  // For Google OAuth, we also need to store the role in metadata
-  // This is handled by updating the user after OAuth completes
-  // via the onAuthStateChange listener in AuthContext
-
-  // Store intended role in sessionStorage for post-OAuth pickup
-  if (!error && role) {
-    sessionStorage.setItem("kyrant_oauth_role", validatedRole);
+  // If the OAuth call itself fails, clean up the stored role
+  if (error) {
+    localStorage.removeItem("kyrant_oauth_role");
   }
 
   return { error };
@@ -166,7 +171,7 @@ export async function signInWithGoogle(role?: string): Promise<{
  */
 export async function signOut(): Promise<{ error: AuthError | null }> {
   const { error } = await supabase.auth.signOut();
-  sessionStorage.removeItem("kyrant_oauth_role");
+  localStorage.removeItem("kyrant_oauth_role");
   return { error };
 }
 

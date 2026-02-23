@@ -2,6 +2,11 @@ import type { FunctionComponent, FormEvent } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import {
+  friendlyError,
+  validateEmail,
+  validatePassword,
+} from "../utils/errorMessages";
 
 /**
  * DesignerSignupPage — Sign-up screen for the "Designer" role.
@@ -24,16 +29,27 @@ const DesignerSignupPage: FunctionComponent = () => {
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   /** Sign up with email/password as a designer */
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim()) return;
-    setIsSubmitting(true);
     setErrorMsg(null);
-    const error = await signUp(email, password, "designer");
-    if (error) {
-      setErrorMsg(error);
+    setSuccessMsg(null);
+
+    // Client-side validation
+    const emailErr = validateEmail(email);
+    if (emailErr) { setErrorMsg(emailErr); return; }
+    const pwErr = validatePassword(password);
+    if (pwErr) { setErrorMsg(pwErr); return; }
+
+    setIsSubmitting(true);
+    const result = await signUp(email, password, "designer");
+    if (result.error) {
+      setErrorMsg(friendlyError(result.error));
+      setIsSubmitting(false);
+    } else if (result.needsEmailConfirmation) {
+      setSuccessMsg("Account created! Check your email for a confirmation link before logging in.");
       setIsSubmitting(false);
     } else {
       navigate("/dashboard");
@@ -43,8 +59,9 @@ const DesignerSignupPage: FunctionComponent = () => {
   /** Sign up with Google as a designer */
   const handleGoogleSignup = async () => {
     setErrorMsg(null);
+    setSuccessMsg(null);
     const error = await signInGoogle("designer");
-    if (error) setErrorMsg(error);
+    if (error) setErrorMsg(friendlyError(error));
   };
 
   return (
@@ -126,6 +143,13 @@ const DesignerSignupPage: FunctionComponent = () => {
               Welcome to Kyrant
             </h3>
           </div>
+
+          {/* Success message (email confirmation) */}
+          {successMsg && (
+            <div className="w-full max-w-[439.4px] rounded-[5px] bg-darkslategray-100/30 border border-solid border-wheat-100 px-4 py-3 text-num-14 text-wheat-100 font-inter">
+              {successMsg}
+            </div>
+          )}
 
           {/* Error message */}
           {errorMsg && (

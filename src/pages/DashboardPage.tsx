@@ -1,5 +1,8 @@
 import type { FunctionComponent } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { friendlyError } from "../utils/errorMessages";
 import LogoBadge from "../components/LogoBadge";
 import BestSellingProductCard from "../components/BestSellingProductCard";
 import DesignCard from "../components/DesignCard";
@@ -145,6 +148,30 @@ const designsData = [
 
 const DashboardPage: FunctionComponent = () => {
   const navigate = useNavigate();
+  const { user, profile, signOut } = useAuth();
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
+
+  const displayName =
+    profile?.full_name ||
+    user?.user_metadata?.full_name ||
+    user?.email?.split("@")[0] ||
+    "User";
+
+  const roleLabel = profile?.role
+    ? profile.role.charAt(0).toUpperCase() + profile.role.slice(1)
+    : "";
+
+  const handleSignOut = async () => {
+    setShowUserMenu(false);
+    const error = await signOut();
+    if (error) {
+      setToastMsg(friendlyError(error));
+      setTimeout(() => setToastMsg(null), 4000);
+    } else {
+      navigate("/onboarding");
+    }
+  };
 
   return (
     <div className="w-full relative bg-darkslategray-100 flex flex-col items-start pt-4 sm:pt-[25px] px-0 pb-0 box-border gap-4 sm:gap-[26px] text-left text-num-14 sm:text-num-16 text-wheat-100 font-inter-28pt">
@@ -192,13 +219,52 @@ const DashboardPage: FunctionComponent = () => {
             </nav>
           </div>
 
-          {/* User avatar */}
-          <img
-            className="h-10 w-10 sm:h-[54px] sm:w-[50px] relative shadow-[0px_4px_0px_rgba(236,_228,_183,_0.75)] object-cover rounded-full"
-            loading="lazy"
-            alt="User avatar"
-            src="/assets/merged-asset-12@2x.png"
-          />
+          {/* User avatar with dropdown */}
+          <div className="relative">
+            <button
+              type="button"
+              className="cursor-pointer border-none bg-transparent p-0 flex items-center gap-2"
+              onClick={() => setShowUserMenu((prev) => !prev)}
+              aria-label="User menu"
+              aria-expanded={showUserMenu}
+            >
+              {/* User initials badge (replaces static avatar) */}
+              <div className="h-10 w-10 sm:h-[54px] sm:w-[50px] shadow-[0px_4px_0px_rgba(236,_228,_183,_0.75)] rounded-full bg-darkslateblue flex items-center justify-center text-wheat-100 font-bold text-num-16 sm:text-num-20 font-inter uppercase select-none">
+                {displayName.charAt(0)}
+              </div>
+            </button>
+
+            {/* Dropdown menu */}
+            {showUserMenu && (
+              <div className="absolute right-0 top-full mt-2 w-56 bg-darkslateblue rounded-xl shadow-lg border border-solid border-wheat-100/20 overflow-hidden z-50">
+                {/* User info */}
+                <div className="px-4 py-3 border-b border-solid border-wheat-100/10">
+                  <p className="m-0 text-num-14 font-semibold font-inter text-wheat-100 truncate">
+                    {displayName}
+                  </p>
+                  {user?.email && (
+                    <p className="m-0 mt-0.5 text-[12px] font-inter text-wheat-100/60 truncate">
+                      {user.email}
+                    </p>
+                  )}
+                  {roleLabel && (
+                    <span className="inline-block mt-1.5 px-2 py-0.5 rounded-full bg-wheat-100/15 text-[11px] font-semibold font-inter text-wheat-100 uppercase tracking-wide">
+                      {roleLabel}
+                    </span>
+                  )}
+                </div>
+
+                {/* Sign out button */}
+                <button
+                  type="button"
+                  className="cursor-pointer w-full bg-transparent border-none px-4 py-3 text-left text-num-14 font-semibold font-inter text-sienna hover:bg-wheat-100/10 transition-colors duration-150"
+                  onClick={handleSignOut}
+                >
+                  Sign out
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
@@ -376,6 +442,13 @@ const DashboardPage: FunctionComponent = () => {
           SECTION 6 — Footer (reused from landing page)
           ═══════════════════════════════════════════════════════════ */}
       <Footer />
+
+      {/* Toast notification */}
+      {toastMsg && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-sienna/90 text-wheat-100 px-6 py-3 rounded-xl shadow-lg text-num-14 font-semibold font-inter">
+          {toastMsg}
+        </div>
+      )}
     </div>
   );
 };

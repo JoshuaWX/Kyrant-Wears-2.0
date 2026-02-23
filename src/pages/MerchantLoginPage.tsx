@@ -2,6 +2,7 @@ import type { FunctionComponent, FormEvent } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { friendlyError, validateEmail } from "../utils/errorMessages";
 
 /**
  * MerchantLoginPage — Login screen for the "Merchant" role.
@@ -28,12 +29,17 @@ const MerchantLoginPage: FunctionComponent = () => {
   /** Sign in with email/password */
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim()) return;
-    setIsSubmitting(true);
     setErrorMsg(null);
+
+    // Client-side validation
+    const emailErr = validateEmail(email);
+    if (emailErr) { setErrorMsg(emailErr); return; }
+    if (!password.trim()) { setErrorMsg("Please enter your password."); return; }
+
+    setIsSubmitting(true);
     const error = await signIn(email, password);
     if (error) {
-      setErrorMsg(error);
+      setErrorMsg(friendlyError(error));
       setIsSubmitting(false);
     } else {
       navigate("/dashboard");
@@ -44,7 +50,7 @@ const MerchantLoginPage: FunctionComponent = () => {
   const handleGoogleLogin = async () => {
     setErrorMsg(null);
     const error = await signInGoogle();
-    if (error) setErrorMsg(error);
+    if (error) setErrorMsg(friendlyError(error));
   };
 
   return (
