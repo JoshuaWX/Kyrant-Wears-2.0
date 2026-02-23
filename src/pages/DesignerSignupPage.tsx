@@ -1,5 +1,5 @@
 import type { FunctionComponent, FormEvent } from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import {
@@ -30,6 +30,15 @@ const DesignerSignupPage: FunctionComponent = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  // Check for OAuth error (stored in sessionStorage after redirect)
+  useEffect(() => {
+    const oauthError = sessionStorage.getItem("kyrant_oauth_error");
+    if (oauthError) {
+      setErrorMsg(oauthError);
+      sessionStorage.removeItem("kyrant_oauth_error");
+    }
+  }, []);
 
   /** Sign up with email/password as a designer */
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {

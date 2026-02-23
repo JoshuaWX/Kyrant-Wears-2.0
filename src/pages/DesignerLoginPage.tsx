@@ -1,5 +1,5 @@
 import type { FunctionComponent, FormEvent } from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { friendlyError, validateEmail } from "../utils/errorMessages";
@@ -26,6 +26,15 @@ const DesignerLoginPage: FunctionComponent = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  // Check for OAuth role-mismatch error (stored in sessionStorage after redirect)
+  useEffect(() => {
+    const oauthError = sessionStorage.getItem("kyrant_oauth_error");
+    if (oauthError) {
+      setErrorMsg(oauthError);
+      sessionStorage.removeItem("kyrant_oauth_error");
+    }
+  }, []);
+
   /** Sign in with email/password */
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -37,7 +46,7 @@ const DesignerLoginPage: FunctionComponent = () => {
     if (!password.trim()) { setErrorMsg("Please enter your password."); return; }
 
     setIsSubmitting(true);
-    const error = await signIn(email, password);
+    const error = await signIn(email, password, "designer");
     if (error) {
       setErrorMsg(friendlyError(error));
       setIsSubmitting(false);
@@ -46,10 +55,10 @@ const DesignerLoginPage: FunctionComponent = () => {
     }
   };
 
-  /** Sign in with Google */
+  /** Sign in with Google as a designer */
   const handleGoogleLogin = async () => {
     setErrorMsg(null);
-    const error = await signInGoogle();
+    const error = await signInGoogle(undefined, "designer");
     if (error) setErrorMsg(friendlyError(error));
   };
 

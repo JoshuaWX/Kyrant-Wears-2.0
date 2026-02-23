@@ -61,9 +61,13 @@ interface AuthContextValue {
     fullName?: string
   ) => Promise<SignUpResult>;
   /** Sign in with email/password — returns error message or null */
-  signIn: (email: string, password: string) => Promise<string | null>;
+  signIn: (
+    email: string,
+    password: string,
+    expectedRole?: string
+  ) => Promise<string | null>;
   /** Sign in with Google OAuth — returns error message or null */
-  signInGoogle: (role?: string) => Promise<string | null>;
+  signInGoogle: (signupRole?: string, expectedRole?: string) => Promise<string | null>;
   /** Sign out — returns error message or null */
   signOut: () => Promise<string | null>;
   /** Refresh the profile data from the database */
@@ -75,6 +79,8 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 /* ── Helpers ── */
 
 const OAUTH_ROLE_KEY = "kyrant_oauth_role";
+const OAUTH_EXPECTED_ROLE_KEY = "kyrant_oauth_expected_role";
+const OAUTH_ERROR_KEY = "kyrant_oauth_error";
 
 /**
  * Fetch profile with exponential back-off retry.
@@ -94,6 +100,41 @@ async function fetchProfileWithRetry(
     }
   }
   return null;
+}
+
+/**
+ * After an OAuth redirect for a LOGIN (not signup), verify the
+ * user's profile role matches what the login page expected.
+ * If it doesn't match, sign out and store an error in sessionStorage
+ * so the login page can display it when the user lands back there.
+ *
+ * Returns true if the role check FAILED (user was signed out).
+ */
+async function handleOAuthLoginRoleCheck(userId: string): Promise<boolean> {
+  const expectedRole = localStorage.getItem(OAUTH_EXPECTED_ROLE_KEY);
+  if (!expectedRole) return false; // no check requested
+  localStorage.removeItem(OAUTH_EXPECTED_ROLE_KEY);
+
+  const { profile } = await getProfile(userId);
+  if (!profile) {
+    // Profile not found yet (new user via login page — unusual but possible).
+    // Let it through; the role assignment flow will handle it.
+    return false;
+  }
+
+  if (profile.role !== expectedRole) {
+    // Role mismatch — sign out and store error for the login page
+    const friendlyRole = profile.role.charAt(0).toUpperCase() + profile.role.slice(1);
+    sessionStorage.setItem(
+      OAUTH_ERROR_KEY,
+      `You're registered as a ${friendlyRole}. Please use the ${friendlyRole} login page instead.`
+    );
+    // Fire-and-forget sign-out
+    supabase.auth.signOut().catch(() => {});
+    return true;
+  }
+
+  return false;
 }
 
 /**
@@ -251,10 +292,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // ── INITIAL_SESSION ──
       if (event === "INITIAL_SESSION") {
         if (newSession?.user) {
-          // Authenticated — kick off background work (non-blocking)
-          handleOAuthRoleAssignment(newSession.user.id).catch(() => {});
-          fetchProfile(newSession.user.id).catch(() => {});
-          resolveLoading();
+          // Check if this is an OAuth login with a role expectation
+          handleOAuthLoginRoleCheck(newSession.user.id)
+            .then((rejected) => {
+              if (rejected) {
+                // Role mismatch — user was signed out, clear state
+                setSession(null);
+                setUser(null);
+                setProfile(null);
+                resolveLoading();
+                return;
+              }
+              // All good — proceed with normal init
+              handleOAuthRoleAssignment(newSession.user.id).catch(() => {});
+              fetchProfile(newSession.user.id).catch(() => {});
+              resolveLoading();
+            })
+            .catch(() => {
+              resolveLoading();
+            });
         } else if (isOAuthCallback) {
           // On an OAuth redirect URL but no session yet.
           // The SDK may still be processing the code exchange.
@@ -279,9 +335,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           clearTimeout(oauthFallbackId);
           oauthFallbackId = null;
         }
-        handleOAuthRoleAssignment(newSession.user.id).catch(() => {});
-        fetchProfile(newSession.user.id).catch(() => {});
-        resolveLoading();
+        // Check OAuth login role
+        handleOAuthLoginRoleCheck(newSession.user.id)
+          .then((rejected) => {
+            if (rejected) {
+              setSession(null);
+              setUser(null);
+              setProfile(null);
+              resolveLoading();
+              return;
+            }
+            handleOAuthRoleAssignment(newSession.user.id).catch(() => {});
+            fetchProfile(newSession.user.id).catch(() => {});
+            resolveLoading();
+          })
+          .catch(() => {
+            resolveLoading();
+          });
       }
 
       // TOKEN_REFRESHED, USER_UPDATED, etc. — session already synced above
@@ -327,13 +397,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const signIn = useCallback(
-    async (email: string, password: string): Promise<string | null> => {
+    async (
+      email: string,
+      password: string,
+      expectedRole?: string
+    ): Promise<string | null> => {
       const { user: signedInUser, session: signedInSession, error } =
         await signInWithEmail(email, password);
       if (error) return error.message;
 
       // Set state immediately so ProtectedRoute sees the user before navigate()
       if (signedInUser && signedInSession) {
+        // ── Role check ──
+        // If the login page specifies an expected role, verify it BEFORE
+        // setting state. This prevents a merchant from logging in via the
+        // designer page (and vice versa).
+        if (expectedRole && signedInUser.id) {
+          const { profile: userProfile } = await getProfile(signedInUser.id);
+          if (userProfile && userProfile.role !== expectedRole) {
+            // Wrong role — undo the sign-in
+            authSignOut().catch(() => {});
+            return `ROLE_MISMATCH:${userProfile.role}:${expectedRole}`;
+          }
+        }
+
         setUser(signedInUser);
         setSession(signedInSession);
       }
@@ -344,9 +431,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const signInGoogle = useCallback(
-    async (role?: string): Promise<string | null> => {
-      const { error } = await signInWithGoogle(role);
-      if (error) return error.message;
+    async (signupRole?: string, expectedRole?: string): Promise<string | null> => {
+      // For login pages: store the expected role so we can verify after redirect
+      if (expectedRole) {
+        localStorage.setItem(OAUTH_EXPECTED_ROLE_KEY, expectedRole);
+      } else {
+        localStorage.removeItem(OAUTH_EXPECTED_ROLE_KEY);
+      }
+      // Clear any previous OAuth error
+      sessionStorage.removeItem(OAUTH_ERROR_KEY);
+
+      const { error } = await signInWithGoogle(signupRole);
+      if (error) {
+        localStorage.removeItem(OAUTH_EXPECTED_ROLE_KEY);
+        return error.message;
+      }
       return null;
     },
     []
@@ -371,11 +470,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             localStorage.removeItem(key);
           }
         }
-        localStorage.removeItem("kyrant_oauth_role");
       } catch {
         /* ignore */
       }
     }
+
+    // Clean up all Kyrant auth keys
+    localStorage.removeItem("kyrant_oauth_role");
+    localStorage.removeItem("kyrant_oauth_expected_role");
 
     return null;
   }, []);

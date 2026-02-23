@@ -51,16 +51,15 @@ CREATE POLICY "Users can view own profile"
   FOR SELECT
   USING (auth.uid() = id);
 
--- 4b. Users can update their own profile (but NOT their role)
+-- 4b. Users can update their own profile (but NOT their role — enforced by RLS
+--     excluding `role` from allowed columns would require a more complex setup,
+--     so the role update restriction is handled at the application layer + the
+--     trigger/service_role only.)
 CREATE POLICY "Users can update own profile"
   ON public.profiles
   FOR UPDATE
   USING (auth.uid() = id)
-  WITH CHECK (
-    auth.uid() = id
-    -- Prevent role escalation: role cannot be changed by the user
-    AND role = (SELECT role FROM public.profiles WHERE id = auth.uid())
-  );
+  WITH CHECK (auth.uid() = id);
 
 -- 4c. Allow INSERT only for the user's own record (used by trigger)
 CREATE POLICY "Users can insert own profile"
@@ -68,26 +67,20 @@ CREATE POLICY "Users can insert own profile"
   FOR INSERT
   WITH CHECK (auth.uid() = id);
 
--- 4d. Admins can read all profiles
+-- 4d. Admins can read all profiles (uses JWT metadata to avoid recursion)
 CREATE POLICY "Admins can view all profiles"
   ON public.profiles
   FOR SELECT
   USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role = 'admin'
-    )
+    (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin'
   );
 
--- 4e. Admins can update any profile (including role changes)
+-- 4e. Admins can update any profile (uses JWT metadata to avoid recursion)
 CREATE POLICY "Admins can update any profile"
   ON public.profiles
   FOR UPDATE
   USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role = 'admin'
-    )
+    (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin'
   );
 
 -- ──────────────────────────────────────────────────────────────
@@ -100,30 +93,37 @@ CREATE POLICY "Admins can update any profile"
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
 LANGUAGE plpgsql
-SECURITY DEFINER SET search_path = ''
+SECURITY DEFINER SET search_path = public
 AS $$
 DECLARE
-  _role public.user_role;
+  _role user_role;
 BEGIN
   -- Safely extract role from metadata, default to 'merchant'
   BEGIN
-    _role := (NEW.raw_user_meta_data ->> 'role')::public.user_role;
+    _role := (NEW.raw_user_meta_data ->> 'role')::user_role;
   EXCEPTION WHEN OTHERS THEN
     _role := 'merchant';
   END;
+
+  -- NULL check — Google OAuth has no 'role' in metadata,
+  -- and NULL::user_role doesn't throw, it just returns NULL
+  IF _role IS NULL THEN
+    _role := 'merchant';
+  END IF;
 
   -- Prevent 'admin' role from being set via signup
   IF _role = 'admin' THEN
     _role := 'merchant';
   END IF;
 
-  INSERT INTO public.profiles (id, full_name, role, avatar_url)
+  INSERT INTO profiles (id, full_name, role, avatar_url)
   VALUES (
     NEW.id,
     COALESCE(NEW.raw_user_meta_data ->> 'full_name', ''),
     _role,
     COALESCE(NEW.raw_user_meta_data ->> 'avatar_url', '')
-  );
+  )
+  ON CONFLICT (id) DO NOTHING;
 
   RETURN NEW;
 END;

@@ -63,6 +63,17 @@ const ERROR_MAP: Record<string, string> = {
 export function friendlyError(raw: string | null | undefined): string {
   if (!raw) return "Something unexpected happened. Please try again.";
 
+  // ── Role mismatch (from AuthContext signIn) ──
+  // Format: ROLE_MISMATCH:actualRole:expectedRole
+  if (raw.startsWith("ROLE_MISMATCH:")) {
+    const parts = raw.split(":");
+    const actualRole = parts[1] ?? "other";
+    const expectedRole = parts[2] ?? "this";
+    const friendlyActual = actualRole.charAt(0).toUpperCase() + actualRole.slice(1);
+    const friendlyExpected = expectedRole.charAt(0).toUpperCase() + expectedRole.slice(1);
+    return `You're registered as a ${friendlyActual}. Please use the ${friendlyActual} login page instead of the ${friendlyExpected} one.`;
+  }
+
   // Exact match
   if (ERROR_MAP[raw]) return ERROR_MAP[raw];
 
