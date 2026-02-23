@@ -42,49 +42,71 @@ COMMENT ON COLUMN public.profiles.role IS 'User role: designer, merchant, or adm
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
 -- ──────────────────────────────────────────────────────────────
--- 4. RLS Policies
+-- 4. SECURITY DEFINER helper — is_admin()
+-- ──────────────────────────────────────────────────────────────
+-- Reads the trusted `role` column from the profiles table.
+-- SECURITY DEFINER means this function runs as the DB owner,
+-- bypassing RLS (no infinite recursion).  The result is based
+-- on the actual stored role — NOT on user_metadata, which any
+-- end-user can edit via supabase.auth.updateUser().
 -- ──────────────────────────────────────────────────────────────
 
--- 4a. Users can read their own profile
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid()
+      AND role = 'admin'
+  );
+$$;
+
+COMMENT ON FUNCTION public.is_admin() IS
+  'Returns true when the authenticated user has the admin role (based on profiles table, not JWT claims).';
+
+-- ──────────────────────────────────────────────────────────────
+-- 5. RLS Policies
+-- ──────────────────────────────────────────────────────────────
+
+-- 5a. Users can read their own profile
 CREATE POLICY "Users can view own profile"
   ON public.profiles
   FOR SELECT
   USING (auth.uid() = id);
 
--- 4b. Users can update their own profile (but NOT their role — enforced by RLS
---     excluding `role` from allowed columns would require a more complex setup,
---     so the role update restriction is handled at the application layer + the
---     trigger/service_role only.)
+-- 5b. Users can update their own profile.
+--     Role-escalation to admin is blocked by the protect_role_escalation
+--     trigger below (defense-in-depth).
 CREATE POLICY "Users can update own profile"
   ON public.profiles
   FOR UPDATE
   USING (auth.uid() = id)
   WITH CHECK (auth.uid() = id);
 
--- 4c. Allow INSERT only for the user's own record (used by trigger)
+-- 5c. Allow INSERT only for the user's own record (used by trigger).
 CREATE POLICY "Users can insert own profile"
   ON public.profiles
   FOR INSERT
   WITH CHECK (auth.uid() = id);
 
--- 4d. Admins can read all profiles (uses JWT metadata to avoid recursion)
+-- 5d. Admins can read ALL profiles (secure — uses is_admin())
 CREATE POLICY "Admins can view all profiles"
   ON public.profiles
   FOR SELECT
-  USING (
-    (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin'
-  );
+  USING (public.is_admin());
 
--- 4e. Admins can update any profile (uses JWT metadata to avoid recursion)
+-- 5e. Admins can update ANY profile (secure — uses is_admin())
 CREATE POLICY "Admins can update any profile"
   ON public.profiles
   FOR UPDATE
-  USING (
-    (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin'
-  );
+  USING (public.is_admin());
 
 -- ──────────────────────────────────────────────────────────────
--- 5. Auto-create profile on user signup (trigger)
+-- 6. Auto-create profile on user signup (trigger)
 -- ──────────────────────────────────────────────────────────────
 -- This function fires after a new auth.users row is created.
 -- It reads the role from raw_user_meta_data (passed during signUp).
@@ -137,7 +159,7 @@ CREATE TRIGGER on_auth_user_created
   EXECUTE FUNCTION public.handle_new_user();
 
 -- ──────────────────────────────────────────────────────────────
--- 6. Auto-update updated_at timestamp
+-- 7. Auto-update updated_at timestamp
 -- ──────────────────────────────────────────────────────────────
 
 CREATE OR REPLACE FUNCTION public.handle_updated_at()
@@ -157,7 +179,40 @@ CREATE TRIGGER on_profile_updated
   EXECUTE FUNCTION public.handle_updated_at();
 
 -- ──────────────────────────────────────────────────────────────
--- 7. Create indexes for performance
+-- 8. Create indexes for performance
 -- ──────────────────────────────────────────────────────────────
 
 CREATE INDEX IF NOT EXISTS idx_profiles_role ON public.profiles(role);
+
+-- ──────────────────────────────────────────────────────────────
+-- 9. Role escalation protection (defense-in-depth)
+-- ──────────────────────────────────────────────────────────────
+-- Prevents non-admin users from granting themselves (or others)
+-- the admin role via a direct UPDATE on the profiles table.
+-- If a non-admin tries to set role = 'admin', the role column is
+-- silently reverted to its previous value.
+-- ──────────────────────────────────────────────────────────────
+
+CREATE OR REPLACE FUNCTION public.protect_role_escalation()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER SET search_path = public
+AS $$
+BEGIN
+  -- Only intervene when someone tries to SET role = admin
+  IF NEW.role = 'admin' AND OLD.role IS DISTINCT FROM 'admin' THEN
+    -- Allow only if the CALLER is already an admin
+    IF NOT public.is_admin() THEN
+      NEW.role := OLD.role;   -- silently revert
+    END IF;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_profile_role_protect ON public.profiles;
+CREATE TRIGGER on_profile_role_protect
+  BEFORE UPDATE ON public.profiles
+  FOR EACH ROW
+  EXECUTE FUNCTION public.protect_role_escalation();
