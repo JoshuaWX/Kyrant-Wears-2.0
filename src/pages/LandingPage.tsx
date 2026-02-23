@@ -51,14 +51,6 @@ const LandingPage: FunctionComponent = () => {
     console.log("Navigate to Brands page");
   }, []);
 
-  const onPrivacyClick = useCallback(() => {
-    navigate("/privacy");
-  }, [navigate]);
-
-  const onTermsClick = useCallback(() => {
-    navigate("/terms");
-  }, [navigate]);
-
   return (
     <div className="w-full relative bg-darkslategray-100 flex flex-col items-end pt-6 sm:pt-[46px] px-0 pb-0 box-border isolate gap-12 sm:gap-16 md:gap-[109px] leading-[normal] tracking-[normal] overflow-x-hidden">
       {/* Navigation header */}
@@ -84,12 +76,7 @@ const LandingPage: FunctionComponent = () => {
       <FaqSection />
 
       {/* Site footer with links and legal info */}
-      <Footer
-        onProductsClick={onProductsClick}
-        onDesignsClick={onDesignsClick}
-        onPrivacyClick={onPrivacyClick}
-        onTermsClick={onTermsClick}
-      />
+      <Footer />
     </div>
   );
 };

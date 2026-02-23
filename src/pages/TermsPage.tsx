@@ -1,7 +1,6 @@
 import type { FunctionComponent } from "react";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import { useNavigate } from "react-router-dom";
 import { useCallback } from "react";
 
 interface Section {
@@ -92,7 +91,6 @@ const SECTIONS: Section[] = [
 ];
 
 const TermsPage: FunctionComponent = () => {
-  const navigate = useNavigate();
 
   const print = useCallback(() => {
     window.print();

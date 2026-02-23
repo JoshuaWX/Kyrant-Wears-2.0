@@ -4,7 +4,7 @@ interface Props {
   exiting?: boolean;
 }
 
-const LoadingScreen: React.FC<Props> = ({ exiting = false }) => {
+const LoadingScreen: React.FC<Props> = ({ exiting: _exiting = false }) => {
   const [progress, setProgress] = useState(8);
 
   useEffect(() => {
