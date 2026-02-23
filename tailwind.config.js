@@ -52,7 +52,7 @@ module.exports = {
         "pacifico": ["Pacifico", "cursive"],
         "bricolage-grotesque": ["Bricolage Grotesque", "sans-serif"],
         "inter": ["Inter", "sans-serif"],
-        "inter-28pt": ["Inter 28pt", "sans-serif"],
+        "inter-28pt": ["Inter", "sans-serif"],
         "tanker": ["Tanker", "sans-serif"],
       },
       borderRadius: {

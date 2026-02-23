@@ -61,7 +61,11 @@ function App() {
         <Routes>
         {/* Public routes */}
         <Route path="/" element={<LandingPage />} />
-        <Route path="/onboarding" element={<OnboardingPage />} />
+        <Route path="/onboarding" element={
+          <RedirectIfAuthenticated>
+            <OnboardingPage />
+          </RedirectIfAuthenticated>
+        } />
 
         {/* Auth routes — redirect to dashboard if already logged in */}
         <Route path="/signup/designer" element={

@@ -2,7 +2,6 @@ import type { FunctionComponent } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { friendlyError } from "../utils/errorMessages";
 import LogoBadge from "../components/LogoBadge";
 import BestSellingProductCard from "../components/BestSellingProductCard";
 import DesignCard from "../components/DesignCard";
@@ -150,7 +149,6 @@ const DashboardPage: FunctionComponent = () => {
   const navigate = useNavigate();
   const { user, profile, signOut } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const displayName =
     profile?.full_name ||
@@ -164,13 +162,8 @@ const DashboardPage: FunctionComponent = () => {
 
   const handleSignOut = async () => {
     setShowUserMenu(false);
-    const error = await signOut();
-    if (error) {
-      setToastMsg(friendlyError(error));
-      setTimeout(() => setToastMsg(null), 4000);
-    } else {
-      navigate("/onboarding");
-    }
+    await signOut();
+    navigate("/onboarding");
   };
 
   return (
@@ -442,13 +435,6 @@ const DashboardPage: FunctionComponent = () => {
           SECTION 6 — Footer (reused from landing page)
           ═══════════════════════════════════════════════════════════ */}
       <Footer />
-
-      {/* Toast notification */}
-      {toastMsg && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-sienna/90 text-wheat-100 px-6 py-3 rounded-xl shadow-lg text-num-14 font-semibold font-inter">
-          {toastMsg}
-        </div>
-      )}
     </div>
   );
 };
