@@ -10,7 +10,7 @@ interface HeroSectionProps {
   onSignUpClick?: () => void;
 }
 
-const HeroSection: FunctionComponent<HeroSectionProps> = ({ onSignUpClick }) => {
+const  HeroSection: FunctionComponent<HeroSectionProps> = ({ onSignUpClick }) => {
   return (
     <section className="w-full lg:w-[1385px] flex items-start justify-center pt-0 px-4 sm:px-5 pb-8 sm:pb-[54px] box-border max-w-full shrink-0 text-center text-[40px] sm:text-[55px] md:text-[70px] lg:text-[85px] text-darkslateblue font-pacifico relative">
       {/* Decorative product image - top left (tote bag) */}
