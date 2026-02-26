@@ -1,5 +1,4 @@
 import type { FunctionComponent } from "react";
-import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import BestSellingProductCard from "../components/BestSellingProductCard";
 import DesignCard from "../components/DesignCard";
@@ -144,8 +143,6 @@ const designsData = [
 ];
 
 const DashboardPage: FunctionComponent = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="w-full relative bg-darkslategray-100 flex flex-col items-start pt-4 sm:pt-[25px] px-0 pb-0 box-border gap-4 sm:gap-[26px] text-left text-num-14 sm:text-num-16 text-wheat-100 font-inter-28pt">
       {/* ═══════════════════════════════════════════════════════════

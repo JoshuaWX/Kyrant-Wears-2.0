@@ -1,6 +1,5 @@
 import type { FunctionComponent } from "react";
 import Footer from "../components/Footer";
-import { useCallback } from "react";
 
 interface Section {
   title: string;
@@ -90,35 +89,6 @@ const SECTIONS: Section[] = [
 ];
 
 const TermsPage: FunctionComponent = () => {
-
-  const print = useCallback(() => {
-    window.print();
-  }, []);
-
-  const download = useCallback(() => {
-    const text = `Kyrant
-Last updated: ${new Date().toLocaleDateString()}
-
-Welcome to Kyrant! By accessing or using our website, platform, or services, you agree to these Terms & Conditions. If you do not agree, please do not use our services.
-
-${SECTIONS.map((section, index) => {
-  const content = Array.isArray(section.content) 
-    ? section.content.join("\n")
-    : section.content;
-  return `${index + 1}. ${section.title}\n${content}`;
-}).join("\n\n")}`;
-
-    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "kyrant-terms-of-service.txt";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }, []);
-
   return (
     <div className="min-h-screen bg-darkslategray-100 text-wheat-100">
      
