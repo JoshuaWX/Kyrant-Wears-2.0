@@ -53,7 +53,7 @@ const FaqSection: FunctionComponent = () => {
       {/* FAQ Title */}
       <h2
         id="faq-heading"
-        className="m-0 relative text-[36px] sm:text-[48px] md:text-[64px] font-extrabold font-bricolage-grotesque text-wheat-100 text-center mb-0"
+        className="m-0 relative text-[36px] sm:text-[48px] md:text-[64px] font-extrabold font-bricolage-grotesque text-wheat-100 text-center mb-0 mt-50"
       >
         FAQ
       </h2>

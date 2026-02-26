@@ -24,7 +24,7 @@ const StepCard: FunctionComponent<StepCardProps> = ({
 }) => {
   return (
     <div
-      className={`flex-1 shadow-[0px_4px_0px_rgba(105,_72,_115,_0.65)] rounded-num-10 bg-darkslateblue flex flex-col items-start pt-5 sm:pt-[30px] pb-4 sm:pb-5 pl-4 sm:pl-[30px] pr-4 sm:pr-7 box-border gap-3 min-w-[160px] sm:min-w-[194px] text-num-14 sm:text-num-17 text-wheat-100 font-bricolage-grotesque ${className}`}
+      className={`flex-1 shadow-[0px_4px_0px_rgba(105,_72,_115,_0.65)] rounded-num-10 bg-darkslateblue flex flex-col items-start pt-5 sm:pt-[30px] pb-6 sm:pb-8 pl-4 sm:pl-[30px] pr-4 sm:pr-7 box-border gap-3 min-w-[160px] sm:min-w-[194px] text-num-14 sm:text-num-17 text-wheat-100 font-bricolage-grotesque ${className}`}
     >
       {/* Icon and title row */}
       <div className="flex items-start gap-5 shrink-0">

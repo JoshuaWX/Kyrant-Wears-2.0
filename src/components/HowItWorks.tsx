@@ -10,7 +10,7 @@ import StepCard from "../components/StepCard";
 const HowItWorks: FunctionComponent = () => {
   return (
     <section
-      className="self-stretch flex items-start justify-center py-0 pl-4 sm:pl-[21px] pr-4 sm:pr-5 box-border max-w-full shrink-0 text-center text-[36px] sm:text-[48px] md:text-[64px] text-wheat-100 font-bricolage-grotesque"
+      className="self-stretch flex items-start justify-center py-0 pl-4 sm:pl-[21px] pr-4 sm:pr-5 box-border max-w-full shrink-0 text-center text-[36px] sm:text-[48px] md:text-[64px] text-wheat-100 font-bricolage-grotesque mb-50"
       aria-labelledby="how-it-works-heading"
     >
       <div className="flex flex-col items-center gap-6 sm:gap-10 max-w-full">
@@ -36,9 +36,18 @@ const HowItWorks: FunctionComponent = () => {
           </h3>
 
           {/* Row 1: Pick a Design + Customize */}
-          <div className="self-stretch flex items-start justify-center flex-wrap content-start gap-[30px]">
-            {/* PICK A DESIGN - with decorative tote bag overlay */}
-            <div className="flex-1 shadow-[0px_4px_0px_rgba(105,_72,_115,_0.65)] rounded-num-10 bg-darkslateblue flex flex-col items-start pt-[30px] px-[30px] pb-5 box-border relative isolate gap-[15px] min-w-[194px]">
+          <div className="self-stretch flex items-start justify-center flex-wrap content-start gap-[30px] relative">
+            {/* Decorative tote bag - floating outside PICK A DESIGN card (increased by 40%) */}
+            <div className="w-[392px] h-[392px] absolute top-[-80px] left-[-220px] z-[3] shrink-0 pointer-events-none hidden md:block">
+              <img
+                className="w-full h-full object-contain animate-float-circle"
+                alt="Decorative tote bag"
+                src="/assets/visualelectric-1754182789652-1@2x.png"
+              />
+            </div>
+
+            {/* PICK A DESIGN - increased height by ~20% */}
+            <div className="flex-1 shadow-[0px_4px_0px_rgba(105,_72,_115,_0.65)] rounded-num-10 bg-darkslateblue flex flex-col items-start pt-[36px] px-[36px] pb-6 box-border relative isolate gap-[18px] min-w-[194px] overflow-hidden">
               <div className="flex items-start py-0 px-0.5 shrink-0">
                 <div className="flex items-start gap-[19px]">
                   <img
@@ -59,8 +68,8 @@ const HowItWorks: FunctionComponent = () => {
               </p>
             </div>
 
-            {/* CUSTOMIZE - with decorative organic shapes overlay */}
-            <div className="flex-1 shadow-[0px_4px_0px_rgba(105,_72,_115,_0.65)] rounded-num-10 bg-darkslateblue flex flex-col items-start pt-[30px] pb-5 pl-[30px] pr-7 box-border relative isolate gap-3 min-w-[194px] overflow-hidden">
+            {/* CUSTOMIZE - increased height by ~20% */}
+            <div className="flex-1 shadow-[0px_4px_0px_rgba(105,_72,_115,_0.65)] rounded-num-10 bg-darkslateblue flex flex-col items-start pt-[36px] pb-6 pl-[36px] pr-8 box-border relative isolate gap-3 min-w-[194px]">
               <div className="flex items-start gap-5 shrink-0">
                 <img
                   className="w-5 relative max-h-full z-[1]"
@@ -77,12 +86,6 @@ const HowItWorks: FunctionComponent = () => {
                 <br />
                 placement to match your taste.
               </p>
-              {/* Decorative organic shapes background */}
-              <img
-                className="w-[336.9px] absolute top-[-143px] right-[-224.9px] max-h-full object-contain z-[2] shrink-0 pointer-events-none"
-                alt=""
-                src="/assets/vecteezy-hand-drawn-abstract-organic-shapes-background-24289943-1@2x.png"
-              />
             </div>
           </div>
 
@@ -111,16 +114,29 @@ const HowItWorks: FunctionComponent = () => {
           </h3>
 
           {/* Row 1: Register Your Shop + Upload & Price */}
-          <div className="self-stretch flex items-start justify-center flex-wrap content-start gap-[30px]">
-            {/* REGISTER YOUR SHOP */}
-            <StepCard
-              icon="/assets/Vector5.svg"
-              title="REGISTER YOUR SHOP"
-              description={`Create your free Creator profile and\nset up your commission preferences.`}
-            />
+          <div className="self-stretch flex items-start justify-center flex-wrap content-start gap-[30px] relative">
+            {/* REGISTER YOUR SHOP - increased height by ~20% */}
+            <div className="flex-1 shadow-[0px_4px_0px_rgba(105,_72,_115,_0.65)] rounded-num-10 bg-darkslateblue flex flex-col items-start pt-[36px] pb-6 pl-[36px] pr-6 box-border relative isolate gap-[18px] min-w-[194px] overflow-hidden">
+              <div className="flex items-start gap-5 shrink-0">
+                <img
+                  className="w-5 relative max-h-full z-[1]"
+                  alt=""
+                  src="/assets/Vector5.svg"
+                />
+                <span className="relative tracking-num-0_02 font-extrabold z-[1] text-num-17 text-wheat-100 font-bricolage-grotesque">
+                  REGISTER YOUR SHOP
+                </span>
+              </div>
+              <div className="self-stretch h-[3px] relative border-wheat-100 border-solid border-t-[3px] box-border z-[1]" />
+              <p className="relative text-num-14 font-light font-inter text-left z-[1] text-wheat-100 m-0">
+                Create your free Creator profile and
+                <br />
+                set up your commission preferences.
+              </p>
+            </div>
 
-            {/* UPLOAD & PRICE - with decorative shirt overlay */}
-            <div className="flex-1 shadow-[0px_4px_0px_rgba(105,_72,_115,_0.65)] rounded-num-10 bg-darkslateblue flex flex-col items-start pt-[30px] pb-5 pl-[30px] pr-6 box-border relative isolate gap-[15px] min-w-[194px] overflow-hidden">
+            {/* UPLOAD & PRICE - increased height by ~20% */}
+            <div className="flex-1 shadow-[0px_4px_0px_rgba(105,_72,_115,_0.65)] rounded-num-10 bg-darkslateblue flex flex-col items-start pt-[36px] pb-6 pl-[36px] pr-6 box-border relative isolate gap-[18px] min-w-[194px] overflow-hidden">
               <div className="flex items-start gap-5 shrink-0">
                 <img
                   className="w-5 relative max-h-full z-[1]"
@@ -137,16 +153,16 @@ const HowItWorks: FunctionComponent = () => {
                 <br />
                 easily set your retail price.
               </p>
-              {/* Decorative shirt image */}
-              <div className="w-[426.6px] h-[426.6px] absolute right-[-248.6px] bottom-[-258.6px] z-[2] shrink-0 pointer-events-none">
-                <img
-                  className="absolute h-full w-full top-0 right-0 bottom-0 left-0 max-w-full overflow-hidden max-h-full object-contain"
-                  loading="lazy"
-                  alt=""
-                  src="/assets/visualelectric-1753142908143-1@2x.png"
-                />
-              </div>
             </div>
+          </div>
+
+          {/* Decorative organic shapes - floating outside UPLOAD & PRICE card (increased by 40%) */}
+          <div className="w-[392px] h-[392px] absolute top-[600px] right-[-180px] z-[4] shrink-0 pointer-events-none hidden md:block">
+            <img
+              className="w-full h-full object-contain animate-float-circle-delayed"
+              alt=""
+              src="/assets/vecteezy-hand-drawn-abstract-organic-shapes-background-24289943-1@2x.png"
+            />
           </div>
 
           {/* Row 2: Track Your Progress (centered) */}

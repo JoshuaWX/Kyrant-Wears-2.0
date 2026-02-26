@@ -58,3 +58,61 @@ img {
   transform: translateX(0) translateY(0) !important;
   transition: transform 600ms cubic-bezier(.22,.9,.35,1), opacity 420ms ease;
 }
+
+/* Float animation for decorative images - 5px radius gentle floating */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Different timing for variety */
+.animate-float-delayed {
+  animation: float 3.5s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+.animate-float-slow {
+  animation: float 4s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+/* Circular float animation - 5-7px radius */
+@keyframes float-circle {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(5px, -5px);
+  }
+  50% {
+    transform: translate(0, -7px);
+  }
+  75% {
+    transform: translate(-5px, -5px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+.animate-float-circle {
+  animation: float-circle 4s ease-in-out infinite;
+}
+
+.animate-float-circle-delayed {
+  animation: float-circle 4.5s ease-in-out infinite;
+  animation-delay: 0.75s;
+}
+
+.animate-float-circle-slow {
+  animation: float-circle 5s ease-in-out infinite;
+  animation-delay: 1.5s;
+}

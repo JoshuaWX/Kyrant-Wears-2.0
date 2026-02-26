@@ -33,25 +33,25 @@ const PRODUCTS = [
 const PopularProducts: FunctionComponent = () => {
   return (
     <section
-      className="self-stretch flex flex-col items-center relative py-10 sm:py-[75px] px-4 sm:px-5 box-border"
+      className="self-stretch flex flex-col items-center relative py-16 sm:py-[100px] px-4 sm:px-5 box-border"
       aria-labelledby="popular-products-heading"
     >
-      {/* Decorative curved line - right */}
+      {/* Decorative curved line - right (moved even lower) */}
       <img
-        className="hidden sm:block w-[400px] md:w-[550px] lg:w-[694.7px] absolute right-0 bottom-0 max-h-full object-contain z-0 shrink-0 pointer-events-none"
+        className="hidden sm:block w-[500px] md:w-[650px] lg:w-[833.64px] absolute right-0 bottom-[-100px] max-h-full object-contain z-0 shrink-0 pointer-events-none"
         alt=""
         src="/assets/vecteezy-hand-drawn-curved-line-shape-curved-line-icon-21999204-2@2x.png"
       />
 
-      {/* Decorative curved line - left */}
+      {/* Decorative curved line - left (raised even higher) */}
       <img
-        className="hidden sm:block w-[400px] md:w-[550px] lg:w-[676.2px] absolute top-[71px] left-0 max-h-full object-contain z-[1] shrink-0 pointer-events-none"
+        className="hidden sm:block w-[500px] md:w-[650px] lg:w-[811.44px] absolute top-[-100px] left-0 max-h-full object-contain z-[1] shrink-0 pointer-events-none"
         alt=""
         src="/assets/vecteezy-hand-drawn-curved-line-shape-curved-line-icon-21999204-1@2x.png"
       />
 
-      {/* Large wheat-colored background oval */}
-      <div className="w-[90%] sm:w-[1200px] h-[600px] sm:h-[856px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-num-501 bg-wheat-100 z-0" />
+      {/* Large wheat-colored background oval - increased by ~20% */}
+      <div className="w-[90%] sm:w-[1440px] h-[720px] sm:h-[1027.2px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-num-501 bg-wheat-100 z-0" />
 
       {/* Section heading */}
       <div className="flex flex-col items-center gap-4 sm:gap-[25px] z-[6] mb-10 sm:mb-[100px]">

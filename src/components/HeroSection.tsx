@@ -12,20 +12,11 @@ interface HeroSectionProps {
 
 const  HeroSection: FunctionComponent<HeroSectionProps> = ({ onSignUpClick }) => {
   return (
-    <section className="w-full lg:w-[1385px] flex items-start justify-center pt-0 px-4 sm:px-5 pb-8 sm:pb-[54px] box-border max-w-full shrink-0 text-center text-[40px] sm:text-[55px] md:text-[70px] lg:text-[85px] text-darkslateblue font-pacifico relative">
-      {/* Decorative product image - top left (tote bag) */}
-      <div className="hidden md:block w-[250px] lg:w-[369.7px] h-[250px] lg:h-[369.7px] absolute top-[-100px] lg:top-[-150px] left-[-40px] lg:left-[-80px] z-[2] pointer-events-none">
-        <img
-          className="absolute h-full w-full top-0 right-0 bottom-0 left-0 shadow-[0px_4px_4px_rgba(0,_0,_0,_0.25)] max-w-full overflow-hidden max-h-full object-contain"
-          alt="Decorative tote bag"
-          src="/assets/visualelectric-1754182789652-1@2x.png"
-        />
-      </div>
-
+    <section className="w-full lg:w-[1385px] flex items-center justify-center mx-auto pt-0 px-4 sm:px-5 pb-8 sm:pb-[54px] box-border max-w-full shrink-0 text-center text-[40px] sm:text-[55px] md:text-[70px] lg:text-[85px] text-darkslateblue font-pacifico relative">
       {/* Decorative product image - right side (green hoodie) */}
       <div className="hidden md:block w-[280px] lg:w-[420px] h-[380px] lg:h-[569px] absolute top-[-20px] right-[-40px] lg:right-[-80px] z-[1] pointer-events-none">
         <img
-          className="absolute h-full w-full top-0 right-0 bottom-0 left-0 max-w-full overflow-hidden max-h-full object-cover"
+          className="absolute h-full w-full top-0 right-0 bottom-0 left-0 max-w-full overflow-hidden max-h-full object-cover border-0 shadow-none animate-float-circle"
           loading="lazy"
           alt="Decorative green hoodie"
           src="/assets/visualelectric-1754181872365-2@2x.png"
@@ -35,7 +26,7 @@ const  HeroSection: FunctionComponent<HeroSectionProps> = ({ onSignUpClick }) =>
       {/* Decorative product image - left side (pants) */}
       <div className="hidden lg:block w-[625.9px] h-[625.9px] absolute top-[-100px] left-[-250px] z-[2] pointer-events-none">
         <img
-          className="absolute h-full w-full top-0 right-0 bottom-0 left-0 shadow-[0px_4px_4px_rgba(0,_0,_0,_0.25)] max-w-full overflow-hidden max-h-full object-contain"
+          className="absolute h-full w-full top-0 right-0 bottom-0 left-0 border-0 shadow-none max-w-full overflow-hidden max-h-full object-contain animate-float-circle-delayed"
           loading="lazy"
           alt="Decorative pants"
           src="/assets/visualelectric-1753143208821-2@2x.png"
@@ -43,7 +34,7 @@ const  HeroSection: FunctionComponent<HeroSectionProps> = ({ onSignUpClick }) =>
       </div>
 
       {/* Main hero content */}
-      <div className="flex flex-col items-center gap-4 sm:gap-6 max-w-full z-[3]">
+      <div className="flex flex-col items-center gap-4 sm:gap-6 max-w-full  z-[3]">
         {/* Main tagline */}
         <h1 className="m-0 relative text-[length:inherit] font-[inherit] text-center">
           <b className="font-bricolage-grotesque text-wheat-100">
