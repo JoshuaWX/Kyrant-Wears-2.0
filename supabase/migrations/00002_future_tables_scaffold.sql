@@ -69,15 +69,10 @@ CREATE POLICY "Buyers read own orders"
   ON public.orders FOR SELECT
   USING (auth.uid() = buyer_id);
 
--- Admins can read all orders
+-- Admins can read all orders (uses SECURITY DEFINER helper)
 CREATE POLICY "Admins read all orders"
   ON public.orders FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role = 'admin'
-    )
-  );
+  USING (public.is_admin());
 */
 
 -- ──────────────────────────────────────────────────────────────
@@ -108,15 +103,10 @@ CREATE POLICY "Users read own payments"
   ON public.payments FOR SELECT
   USING (auth.uid() = payer_id);
 
--- Admins can read all payments
+-- Admins can read all payments (uses SECURITY DEFINER helper)
 CREATE POLICY "Admins read all payments"
   ON public.payments FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role = 'admin'
-    )
-  );
+  USING (public.is_admin());
 */
 
 -- ──────────────────────────────────────────────────────────────
@@ -138,15 +128,10 @@ CREATE TABLE IF NOT EXISTS public.analytics_events (
 
 ALTER TABLE public.analytics_events ENABLE ROW LEVEL SECURITY;
 
--- Only admins can read analytics
+-- Only admins can read analytics (uses SECURITY DEFINER helper)
 CREATE POLICY "Admins read analytics"
   ON public.analytics_events FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role = 'admin'
-    )
-  );
+  USING (public.is_admin());
 
 -- Authenticated users can insert their own events
 CREATE POLICY "Users insert own events"

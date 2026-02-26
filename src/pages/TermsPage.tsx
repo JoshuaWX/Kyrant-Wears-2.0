@@ -1,7 +1,5 @@
 import type { FunctionComponent } from "react";
 import Footer from "../components/Footer";
-import Header from "../components/Header";
-import { useCallback } from "react";
 
 interface Section {
   title: string;
@@ -91,56 +89,12 @@ const SECTIONS: Section[] = [
 ];
 
 const TermsPage: FunctionComponent = () => {
-
-  const print = useCallback(() => {
-    window.print();
-  }, []);
-
-  const download = useCallback(() => {
-    const text = `Kyrant
-Last updated: ${new Date().toLocaleDateString()}
-
-Welcome to Kyrant! By accessing or using our website, platform, or services, you agree to these Terms & Conditions. If you do not agree, please do not use our services.
-
-${SECTIONS.map((section, index) => {
-  const content = Array.isArray(section.content) 
-    ? section.content.join("\n")
-    : section.content;
-  return `${index + 1}. ${section.title}\n${content}`;
-}).join("\n\n")}`;
-
-    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "kyrant-terms-of-service.txt";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }, []);
-
   return (
     <div className="min-h-screen bg-darkslategray-100 text-wheat-100">
-      <Header />
+     
 
-      <main className="max-w-[1290px] mx-auto mt-[181px] px-4 md:px-[72px] pb-20 relative">
-        {/* Print/Download buttons */}
-        <div className="absolute right-4 md:right-0 top-[-48px] flex gap-3">
-          <button
-            onClick={print}
-            className="px-4 py-2 rounded-lg border border-wheat-100/60 bg-transparent text-wheat-100 font-inter text-num-13 font-medium hover:bg-wheat-100/10 transition-colors cursor-pointer"
-          >
-            Print
-          </button>
-          <button
-            onClick={download}
-            className="px-4 py-2 rounded-lg border-none bg-darkslateblue text-wheat-100 font-inter text-num-13 font-medium shadow-[0_4px_0_rgba(105,72,115,0.65)] hover:translate-y-[2px] hover:shadow-[0_2px_0_rgba(105,72,115,0.65)] transition-all cursor-pointer"
-          >
-            Download
-          </button>
-        </div>
-
+      <main className="max-w-[1290px] mx-auto pt-10 sm:pt-16 px-4 md:px-[72px] pb-20 relative">
+  
         {/* Page Title */}
         <h1 className="font-bricolage-grotesque font-extrabold text-num-40 uppercase text-wheat-100 tracking-wide m-0 leading-[48px] text-shadow-[-4px_4px_0_rgba(105,72,115,0.75)]">
           Terms of Service

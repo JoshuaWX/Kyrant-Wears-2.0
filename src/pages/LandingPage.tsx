@@ -33,34 +33,13 @@ const LandingPage: FunctionComponent = () => {
     navigate("/login/merchant");
   }, [navigate]);
 
-  /* Navigate to dashboard page via LogoBadge */
-  const onLogoClick = useCallback(() => {
-    navigate("/dashboard");
-  }, [navigate]);
-
-  /* Navigation callbacks — wire these to React Router when routes are added */
-  const onProductsClick = useCallback(() => {
-    console.log("Navigate to Products page");
-  }, []);
-
-  const onDesignsClick = useCallback(() => {
-    console.log("Navigate to Designs page");
-  }, []);
-
-  const onBrandsClick = useCallback(() => {
-    console.log("Navigate to Brands page");
-  }, []);
-
   return (
     <div className="w-full relative bg-darkslategray-100 flex flex-col items-end pt-6 sm:pt-[46px] px-0 pb-0 box-border isolate gap-12 sm:gap-16 md:gap-[109px] leading-[normal] tracking-[normal] overflow-x-hidden">
       {/* Navigation header */}
       <Header
-        onProductsClick={onProductsClick}
-        onDesignsClick={onDesignsClick}
-        onBrandsClick={onBrandsClick}
         onSignUpClick={onSignUpClick}
         onLoginClick={onLoginClick}
-        onLogoClick={onLogoClick}
+        className="pb-8 md:pb-[68px]"
       />
 
       {/* Hero section with tagline and CTA */}

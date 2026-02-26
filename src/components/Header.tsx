@@ -6,26 +6,32 @@ import LogoBadge from "../components/LogoBadge";
 import NavButton from "../components/NavButton";
 
 /**
- * Header - Top navigation bar with brand wordmark, navigation links,
- * and Login/Sign Up buttons (or user dropdown when signed in).
+ * Header — Unified top navigation bar used across all pages.
+ *
+ * Layout matches the DashboardPage header:
+ *   Kyrant wordmark | pill nav (K · PRODUCTS · DESIGNS · BRANDS) | avatar / auth buttons
+ *
+ * Props:
+ *  - activeLink: which nav item is currently active ("products" | "designs" | "brands")
+ *  - onSignUpClick / onLoginClick: only used when not authenticated
+ *  - className: extra wrapper classes (e.g. bottom padding per page)
  */
 
+type ActiveLink = "products" | "designs" | "brands" | null;
+
 interface HeaderProps {
-  onProductsClick?: () => void;
-  onDesignsClick?: () => void;
-  onBrandsClick?: () => void;
+  /** Which nav link should be underlined (current page indicator) */
+  activeLink?: ActiveLink;
   onSignUpClick?: () => void;
   onLoginClick?: () => void;
-  onLogoClick?: () => void;
+  className?: string;
 }
 
 const Header: FunctionComponent<HeaderProps> = ({
-  onProductsClick,
-  onDesignsClick,
-  onBrandsClick,
+  activeLink = null,
   onSignUpClick,
   onLoginClick,
-  onLogoClick,
+  className = "",
 }) => {
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
@@ -47,61 +53,63 @@ const Header: FunctionComponent<HeaderProps> = ({
     navigate("/onboarding");
   };
 
-  return (
-    <header className="self-stretch flex items-start justify-end pt-0 px-4 sm:px-6 md:px-10 lg:px-[75px] pb-8 md:pb-[68px] box-border max-w-full shrink-0 text-left text-num-32 text-darkslateblue font-pacifico">
-      <div className="flex-1 flex flex-col md:flex-row items-center md:items-start justify-between gap-4 md:gap-5 max-w-full">
-        {/* Brand wordmark */}
-        <div className="w-auto md:w-52 flex flex-col items-start py-0 pl-0 pr-0 md:pr-5 box-border">
-          <Link to="/" className="no-underline text-inherit">
-            <h1 className="m-0 relative text-[length:inherit] font-normal font-[inherit]">
-              Kyrant
-            </h1>
-          </Link>
-        </div>
+  /** Shared link classes; adds underline when active */
+  const navLinkClass = (link: ActiveLink) =>
+    `m-0 relative text-num-14 sm:text-num-18 font-bold font-bricolage-grotesque cursor-pointer z-[1] no-underline text-darkslateblue ${
+      activeLink === link ? "underline" : ""
+    }`;
 
-        {/* Navigation pill bar */}
-        <nav
-          className="w-full sm:w-auto md:w-[438px] shadow-[0px_4px_0px_rgba(236,_228,_183,_0.85)] rounded-num-30 bg-wheat-100 flex items-center sm:items-start pt-[3px] px-1.5 pb-1.5 box-border gap-3 sm:gap-[42px] max-w-full text-center text-num-14 sm:text-num-18 font-bricolage-grotesque"
-          aria-label="Main navigation"
+  return (
+    <header
+      className={`self-stretch flex items-start justify-center py-0 px-4 sm:px-[30px] text-left text-num-20 sm:text-num-32 text-darkslateblue font-pacifico ${className}`}
+    >
+      <div className="flex-1 flex items-center sm:items-start justify-between flex-wrap content-start gap-x-4 gap-y-2.5 max-w-[1290px]">
+        {/* ── Brand wordmark ── */}
+        <Link
+          to="/"
+          className="no-underline text-inherit flex items-start"
+          aria-label="Go to landing page"
         >
-          {/* Logo badge + nav links */}
-          <div className="flex items-center sm:items-start gap-2 sm:gap-[15px] shrink-0">
-            <LogoBadge onClick={onLogoClick} />
-            <div className="flex-1 flex flex-col items-start pt-[11px] px-0 pb-0">
-              <Link
-                to="/products"
-                className="m-0 self-stretch relative text-num-14 sm:text-num-18 font-bold font-bricolage-grotesque inline-block min-w-0 sm:min-w-[100px] cursor-pointer z-[1] no-underline text-darkslateblue underline"
-                onClick={onProductsClick}
-              >
+          <h2 className="m-0 w-auto sm:w-[104px] relative text-num-20 sm:text-num-32 font-normal font-pacifico inline-block shrink-0">
+            Kyrant
+          </h2>
+        </Link>
+
+        {/* ── Pill navigation bar ── */}
+        <div className="flex-1 flex items-start py-0 pl-0 pr-0 sm:pr-[54px] box-border min-w-[240px] sm:min-w-[310px] max-w-[492px] text-center text-num-14 sm:text-num-18 font-bricolage-grotesque">
+          <nav
+            className="flex-1 shadow-[0px_4px_0px_rgba(236,_228,_183,_0.85)] rounded-[30px] bg-wheat-100 flex items-center flex-wrap content-center pt-[3px] px-[5.9px] pb-[2.1px] gap-2 sm:gap-[16.5px] shrink-0"
+            aria-label="Main navigation"
+          >
+            {/* Logo badge */}
+            <div className="flex items-start pt-0 px-0 pb-[3.9px]">
+              <LogoBadge onClick={() => navigate("/")} />
+            </div>
+
+            {/* PRODUCTS */}
+            <div className="flex-1 flex items-start min-w-[70px] sm:min-w-[97px] max-w-[132px]">
+              <Link to="/products" className={navLinkClass("products")}>
                 PRODUCTS
               </Link>
             </div>
-          </div>
 
-          <div className="flex flex-col items-start pt-[11px] px-0 pb-0 shrink-0">
-            <Link
-              to="/designs"
-              className="m-0 relative text-num-14 sm:text-num-18 font-bold font-bricolage-grotesque cursor-pointer z-[1] no-underline text-darkslateblue"
-              onClick={onDesignsClick}
-            >
-              DESIGNS
+            {/* DESIGNS */}
+            <div className="flex-1 flex items-start min-w-[60px] sm:min-w-[80px] max-w-[113.5px]">
+              <Link to="/designs" className={navLinkClass("designs")}>
+                DESIGNS
+              </Link>
+            </div>
+
+            {/* BRANDS */}
+            <Link to="/about" className={navLinkClass("brands")}>
+              BRANDS
             </Link>
-          </div>
+          </nav>
+        </div>
 
-          <div className="flex flex-col items-start pt-[11px] px-0 pb-0 shrink-0">
-            <Link
-              to="/about"
-              className="m-0 relative text-num-14 sm:text-num-18 font-bold font-bricolage-grotesque cursor-pointer z-[1] no-underline text-darkslateblue"
-              onClick={onBrandsClick}
-            >
-              ABOUT
-            </Link>
-          </div>
-        </nav>
-
-        {/* Authentication area — avatar dropdown when signed in, buttons when not */}
+        {/* ── Auth area: avatar dropdown when signed in, buttons when not ── */}
         {user ? (
-          <div className="relative h-[49px] flex items-center">
+          <div className="relative">
             <button
               type="button"
               className="cursor-pointer border-none bg-transparent p-0 flex items-center gap-2"
@@ -109,7 +117,7 @@ const Header: FunctionComponent<HeaderProps> = ({
               aria-label="User menu"
               aria-expanded={showUserMenu}
             >
-              <div className="h-10 w-10 shadow-[0px_4px_0px_rgba(236,_228,_183,_0.75)] rounded-full bg-darkslateblue flex items-center justify-center text-wheat-100 font-bold text-num-16 font-inter uppercase select-none">
+              <div className="h-10 w-10 sm:h-[54px] sm:w-[50px] shadow-[0px_4px_0px_rgba(236,_228,_183,_0.75)] rounded-full bg-darkslateblue flex items-center justify-center text-wheat-100 font-bold text-num-16 sm:text-num-20 font-inter uppercase select-none">
                 {displayName.charAt(0)}
               </div>
             </button>

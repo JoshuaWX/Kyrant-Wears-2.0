@@ -7,6 +7,8 @@ import DesignerLoginPage from "./pages/DesignerLoginPage";
 import MerchantSignupPage from "./pages/MerchantSignupPage";
 import MerchantLoginPage from "./pages/MerchantLoginPage";
 import DashboardPage from "./pages/DashboardPage";
+import ProductsPage from "./pages/ProductsPage";
+import DesignsPage from "./pages/DesignsPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -95,6 +97,11 @@ function App() {
             <DashboardPage />
           </ProtectedRoute>
         } />
+        {/* Products catalog */}
+        <Route path="/products" element={<ProductsPage />} />
+        {/* Designs catalog */}
+        <Route path="/designs" element={<DesignsPage />} />
+
         {/* Legal pages */}
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
