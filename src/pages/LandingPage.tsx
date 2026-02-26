@@ -40,8 +40,8 @@ const LandingPage: FunctionComponent = () => {
 
   /* Navigation callbacks — wire these to React Router when routes are added */
   const onProductsClick = useCallback(() => {
-    console.log("Navigate to Products page");
-  }, []);
+    navigate("/products");
+  }, [navigate]);
 
   const onDesignsClick = useCallback(() => {
     console.log("Navigate to Designs page");
