@@ -58,8 +58,7 @@ const MerchantSignupPage: FunctionComponent = () => {
       setErrorMsg(friendlyError(result.error));
       setIsSubmitting(false);
     } else if (result.needsEmailConfirmation) {
-      setSuccessMsg("Account created! Check your email for a confirmation link before logging in.");
-      setIsSubmitting(false);
+      navigate(`/signup/confirm?email=${encodeURIComponent(email)}`);
     } else {
       navigate("/dashboard");
     }
@@ -177,6 +176,8 @@ const MerchantSignupPage: FunctionComponent = () => {
             <div className="w-full flex items-start pt-0 pb-[4.9px] pl-0 pr-[16.4px] box-border max-w-[439.4px]">
               <div className="flex-1 rounded-[5px] border-wheat-100 border-solid border-[3px] flex items-start pt-[21.8px] px-[16.9px] pb-[21.2px] shrink-0">
                 <input
+                  id="merchant-signup-email"
+                  name="email"
                   className="w-full border-none outline-none font-semibold font-inter text-num-16 bg-transparent flex-1 relative leading-[16.5px] text-white text-left flex items-center placeholder:text-wheat-100"
                   placeholder="Email"
                   type="email"
@@ -193,6 +194,8 @@ const MerchantSignupPage: FunctionComponent = () => {
             <div className="w-full flex items-start py-0 pl-0 pr-[16.4px] box-border max-w-[439.4px]">
               <div className="flex-1 rounded-[5px] border-wheat-100 border-solid border-[3px] flex items-start pt-[21.8px] px-[16.9px] pb-[21.2px] shrink-0">
                 <input
+                  id="merchant-signup-password"
+                  name="password"
                   className="w-full border-none outline-none font-semibold font-inter text-num-16 bg-transparent flex-1 relative leading-[16.5px] text-white text-left flex items-center placeholder:text-wheat-100"
                   placeholder="Password"
                   type="password"

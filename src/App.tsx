@@ -9,6 +9,7 @@ import MerchantLoginPage from "./pages/MerchantLoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import ProductsPage from "./pages/ProductsPage";
 import DesignsPage from "./pages/DesignsPage";
+import SignUpConfirmationPage from "./pages/SignUpConfirmationPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -97,6 +98,9 @@ function App() {
             <DashboardPage />
           </ProtectedRoute>
         } />
+        {/* Signup email confirmation */}
+        <Route path="/signup/confirm" element={<SignUpConfirmationPage />} />
+
         {/* Products catalog */}
         <Route path="/products" element={<ProductsPage />} />
         {/* Designs catalog */}
