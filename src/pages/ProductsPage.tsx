@@ -82,17 +82,6 @@ const ProductsPage: FunctionComponent = () => {
     () => navigate("/login/merchant"),
     [navigate]
   );
-  const onLogoClick = useCallback(() => navigate("/dashboard"), [navigate]);
-  const onProductsClick = useCallback(
-    () => navigate("/products"),
-    [navigate]
-  );
-  const onDesignsClick = useCallback(() => {
-    /* Designs page — future route */
-  }, []);
-  const onBrandsClick = useCallback(() => {
-    /* Brands page — future route */
-  }, []);
 
   const onCategoryClick = useCallback(
     (categoryId: string) => {
@@ -106,12 +95,9 @@ const ProductsPage: FunctionComponent = () => {
     <div className="w-full relative bg-darkslategray-100 flex flex-col items-end pt-6 sm:pt-11.5 px-0 pb-0 box-border gap-0 leading-[normal] tracking-[normal] overflow-x-hidden">
       {/* ── Header ── */}
       <Header
-        onProductsClick={onProductsClick}
-        onDesignsClick={onDesignsClick}
-        onBrandsClick={onBrandsClick}
+        activeLink="products"
         onSignUpClick={onSignUpClick}
         onLoginClick={onLoginClick}
-        onLogoClick={onLogoClick}
       />
 
       {/* ── Main content ── */}
