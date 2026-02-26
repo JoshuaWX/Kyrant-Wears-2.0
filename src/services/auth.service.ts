@@ -80,6 +80,7 @@ export async function signUpWithEmail(
         role: validatedRole,
         full_name: fullName ?? "",
       },
+      emailRedirectTo: `${window.location.origin}/email-confirmed`,
     },
   });
 

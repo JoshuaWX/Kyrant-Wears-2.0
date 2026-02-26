@@ -10,6 +10,7 @@ import DashboardPage from "./pages/DashboardPage";
 import ProductsPage from "./pages/ProductsPage";
 import DesignsPage from "./pages/DesignsPage";
 import SignUpConfirmationPage from "./pages/SignUpConfirmationPage";
+import EmailConfirmedPage from "./pages/EmailConfirmedPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -100,6 +101,8 @@ function App() {
         } />
         {/* Signup email confirmation */}
         <Route path="/signup/confirm" element={<SignUpConfirmationPage />} />
+        {/* Email confirmed — user lands here after clicking confirmation link */}
+        <Route path="/email-confirmed" element={<EmailConfirmedPage />} />
 
         {/* Products catalog */}
         <Route path="/products" element={<ProductsPage />} />
