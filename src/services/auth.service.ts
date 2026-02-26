@@ -80,8 +80,25 @@ export async function signUpWithEmail(
         role: validatedRole,
         full_name: fullName ?? "",
       },
+      emailRedirectTo: `${window.location.origin}/email-confirmed`,
     },
   });
+
+  // Supabase anti-enumeration: when a confirmed user already exists,
+  // signUp returns a fake user with an EMPTY identities array, no
+  // session, and no error. Detect this and return a clear error so
+  // the caller doesn't navigate to the confirmation page.
+  if (
+    !error &&
+    data.user &&
+    (!data.user.identities || data.user.identities.length === 0)
+  ) {
+    return {
+      user: null,
+      session: null,
+      error: { message: "User already registered" } as AuthError,
+    };
+  }
 
   return {
     user: data.user ?? null,
